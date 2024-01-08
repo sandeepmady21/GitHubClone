@@ -33,6 +33,10 @@ public class Client {
 		while ((userInput = stdIn.readLine()) != null) {
 			out.println(userInput);
 
+			/*
+			to connect the run: "Connect user123 pass456"
+			in the client server.
+			 */
 			if (userInput.startsWith("Connect")) {
 				// Extract username and password from the message
 				String[] params = userInput.split("\\s+");
