@@ -7,9 +7,12 @@ import java.io.BufferedReader; // reads text from an input stream (like a file o
 import java.io.InputStreamReader; // acts as bridge from byte streams to character streams.
 import java.io.IOException; // general class of exceptions for I/O operations
 import java.io.PrintWriter;
+import java.io.*;
+import java.lang.Thread;
 
-public class Server {
-	public static void main(String[] args) throws IOException {
+
+public class Server extends Thread {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		// create new server socket and bind it to port 1234
 		ServerSocket serverSocket = new ServerSocket(1234);
 		
@@ -35,6 +38,8 @@ public class Server {
 		// loop continuously reads lines from the client till 'null' (end of stream)
 
 		while ((inputLine = in.readLine()) != null) {
+			// sleep command
+			Thread.sleep(1000);
 			// If the input is a "Connect" RPC, set the username
 			if (inputLine.startsWith("Connect")) {
 				String[] params = inputLine.split("\\s+");
@@ -44,6 +49,7 @@ public class Server {
 			} else {
 				// If it's a regular message, display the username with the message
 				System.out.println(userName + ": " + inputLine);
+
 			}
 
 			if (inputLine.equalsIgnoreCase("exit")) {

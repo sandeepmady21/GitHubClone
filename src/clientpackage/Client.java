@@ -5,10 +5,10 @@ import java.net.Socket;  // for client side socket
  * For printing formatted representations of objects to a text-output stream
  * Used to send text data to the server
  */
-import java.io.PrintWriter; 
+import java.io.PrintWriter;
 import java.io.BufferedReader; // to read data from the console
 import java.io.InputStreamReader; // to convert byte streams
-import java.io.IOException; 
+import java.io.IOException;
 
 public class Client {
 	public static void main(String[] args) throws IOException {
@@ -31,8 +31,6 @@ public class Client {
 		// Input loop: read lines from console as long as the input is not 'null'
 		// Inside the client's loop
 		while ((userInput = stdIn.readLine()) != null) {
-			out.println(userInput);
-
 			/*
 			to connect the run: "Connect user123 pass456"
 			in the client server.
@@ -43,14 +41,14 @@ public class Client {
 				String userName = params[1];
 				String password = params[2];
 
-				// Process the server's response for Connect RPC
-				String response = stdIn.readLine();
 
 			}
 
 			if (userInput.equalsIgnoreCase("exit")) {
 				break;
 			}
+			out.println(userInput);
+
 		}
 
 
