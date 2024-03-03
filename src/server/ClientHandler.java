@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import common.Commit;
 import common.GlobalContext;
 import common.LocalContext;
 import common.Project;
@@ -98,8 +99,15 @@ class ClientHandler implements Runnable {
                             serverOutput.println("No project cloned!");
                         } else {
                             String commitMessage = parts[1];
-                            localContext.clonedProject.commits.add(commitMessage);
+                            localContext.clonedProject.commits.add(new Commit(localContext.username, commitMessage));
                             serverOutput.println("Commit successful!");
+                        }
+                        break;
+                    case "LOG":
+                        if (localContext.clonedProject == null) {
+                            serverOutput.println("No project cloned!");
+                        } else {
+                            serverOutput.println(localContext.clonedProject.commits);
                         }
                         break;
 
