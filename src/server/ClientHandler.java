@@ -44,13 +44,18 @@ class ClientHandler implements Runnable {
                     case "CREATE":
                         commandHandler.handleCreate(parts, serverOutput, localContext);
                         break;
+                        
+                    case "LIST":
+                        commandHandler.handleList(serverOutput);
+                        break;
 
                     case "CLONE":
+                    	System.out.println("[Debug] CLONE command received. Processing...");
                         commandHandler.handleClone(parts, serverOutput, localContext);
                         break;
                     
                     case "COMMIT":
-                        commandHandler.handleCommit(parts, serverOutput, localContext);
+                        commandHandler.handleCommit(serverOutput, localContext, inputLine);
                         break;
 
                     case "LOG":
@@ -64,10 +69,35 @@ class ClientHandler implements Runnable {
                     case "PUSH":
                         commandHandler.handlePush(parts, serverOutput, localContext);
                         break;
+                        
+                    case "PULL":
+                    	commandHandler.handlePull(parts, serverOutput, localContext);
+                    	break;
+                        
+                    case "CREATEFILE":
+                        commandHandler.handleCreateFile(parts, serverOutput, localContext);
+                        break;
+                        
+                    case "VIEWFILE":
+                        commandHandler.handleViewFile(parts, serverOutput, localContext);
+                        break;
+                        
+                    case "WRITEFILE":
+                        commandHandler.handleWriteFile(parts, inputLine, serverOutput, localContext);
+                        break;
 
                     case "HELP":
                         commandHandler.handleHelp(serverOutput, localContext);
                         break;
+                        
+                    case "SHUTDOWN":
+                        if (parts.length >= 2) { // Check if a key was provided
+                            commandHandler.handleShutdown(parts[1], serverOutput);
+                        } else {
+                            serverOutput.println("Invalid SHUTDOWN command. Usage: SHUTDOWN {secret_key}");
+                        }
+                        break;
+                        
                     default:
                         serverOutput.println("Invalid command. Please use HELP to list all available commands.");
                         break;

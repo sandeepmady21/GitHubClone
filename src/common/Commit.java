@@ -1,8 +1,10 @@
 package common;
 
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
-public class Commit {
+public class Commit implements Serializable {
+	private static final long serialVersionUID = 1L;
     public String message;
     public String user;
     public LocalDateTime datetime;

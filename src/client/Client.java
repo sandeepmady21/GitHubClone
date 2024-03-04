@@ -55,12 +55,17 @@ public class Client {
 
     private static void printAvailableCommands() {
         System.out.println("Logged in successfully. Available commands: \n");
+        System.out.println("- LOGIN {username} {password} : Log in to the server");
         System.out.println("- CREATE {projectname} : Creates a new project on the server");
-        System.out.println("- CLONE {projectname} : Clones a project from the server to your local context");
-        System.out.println("- COMMIT {message} : Commits to the project that is currently cloned in your local context. The commit message will be added to the list of commits in your local project");
+        System.out.println("- CLONE {projectname} : Clones a project from the server");
+        System.out.println("- COMMIT {message} : Commits to your currently cloned project. The commit message will be added to the list of commits in your project");
         System.out.println("- PUSH {projectname} : Pushes your local commit history of the cloned project back to the server");
-        System.out.println("- DISCONNECT : Disconnect current user");
-        System.out.println("- HELP : Lists all the commands and what they do.");
+        System.out.println("- LOG : Shows the commit history of the cloned project");
+        System.out.println("- COMMITLOG : Show all the commits of the cloned project");
+        System.out.println("- LIST : Lists all available projects");
+        System.out.println("- SHUTDOWN {secret_key} : Shuts down the server if the correct key is provided");
+        System.out.println("- DISCONNECT : Disconnects you");
+        System.out.println("- HELP : Lists all the commands and what they do");
     }
 
     private static void handleUserInput(String input, PrintWriter out) {
