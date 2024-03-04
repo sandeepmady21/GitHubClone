@@ -85,6 +85,14 @@ class ClientHandler implements Runnable {
                     case "WRITEFILE":
                         commandHandler.handleWriteFile(parts, inputLine, serverOutput, localContext);
                         break;
+                        
+                    case "LISTFILES":
+                    	commandHandler.handleListFiles(parts, serverOutput, localContext);
+                    	break;
+                    	
+                    case "REMOVE":
+                    	commandHandler.handleRemove(parts, serverOutput, localContext);
+                    	break;
 
                     case "HELP":
                         commandHandler.handleHelp(serverOutput, localContext);

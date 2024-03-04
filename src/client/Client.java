@@ -19,8 +19,6 @@ public class Client {
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 
             sendLoginCommand(scanner, out);
-            // send help command
-            out.println("help");
 
             // Create a thread to read server's responses
             new Thread(() -> {

@@ -23,10 +23,13 @@ public class CommandHandler {
                 localContext.username = username;
                 GlobalContext.connectedUsers.incrementAndGet();
                 serverOutput.println("Login successful!");
+                serverOutput.println("Try using help for listing commands");
                 System.out.println("Client \'" + localContext.username + 
                         "\' logged in. Total active connections: " + GlobalContext.connectedUsers.get() + ".");
             } else {
-                serverOutput.println("Invalid username or password!");
+                serverOutput.println("Invalid username or password! Please try again :)");
+                serverOutput.println("Use the command - login {username} {password}");
+                
             }
         }
     }
@@ -59,34 +62,29 @@ public class CommandHandler {
     }
     
     public void handleList(PrintWriter serverOutput) {
-        if(GlobalContext.projects.isEmpty()){
-                serverOutput.println("No projects have been created yet!");
+        if (GlobalContext.projects.isEmpty()) {
+            serverOutput.println("No projects have been created yet!");
         } else {
-            serverOutput.println("Available projects: ");
+            serverOutput.println("┌───────────────────────────┐");
+            serverOutput.println("│     Available Projects    │");
+            serverOutput.println("├───────────────────────────┤");
             for (String projectName : GlobalContext.projects.keySet()) {
-                serverOutput.println(projectName);
+                serverOutput.println("│ " + padRight(projectName, 26) + "│"); // Adjust spacing for alignment
             }
+            serverOutput.println("└───────────────────────────┘");
         }
     }
 
     public void handleClone(String[] parts, PrintWriter serverOutput, LocalContext localContext) {
-    	System.out.println("[Debug] Entered handleClone method. Processing...");
         if (parts.length < 2) {
             serverOutput.println("Invalid CLONE command. Usage: CLONE {name}");
         } else {
             String projectName = parts[1];
-            System.out.println("[Debug] Requested to clone project: " + projectName);
             if (GlobalContext.projects.containsKey(projectName)) {
-                System.out.println("[Debug] Project exists. Cloning...");
                 Project projectToClone = GlobalContext.projects.get(projectName);
-                try {
-                    localContext.clonedProject = new Project(projectToClone);
-                    serverOutput.println("Project cloned successfully!");
-                    localContext.clonedProject.activityLog.add(localContext.username + " cloned project");
-                    System.out.println("[Debug] Cloning successful"); // Add a debug log after cloning
-                } catch (Exception e) {
-                    System.out.println("[Debug] Error during cloning: " + e.getMessage()); // Catch any exception during cloning
-                }
+                localContext.clonedProject = new Project(projectToClone); // Deep copy construction
+                serverOutput.println("Project cloned successfully!");
+                localContext.clonedProject.activityLog.add(localContext.username + " cloned project");
             } else {
                 serverOutput.println("Project does not exist!");
             }
@@ -139,10 +137,10 @@ public class CommandHandler {
         } else {
             String projectName = parts[1];
             if (GlobalContext.projects.containsKey(projectName)) {
-                GlobalContext.projects.get(projectName).commits = localContext.clonedProject.commits;
-                GlobalContext.projects.get(projectName).files = localContext.clonedProject.files; // handle files during push
+                // Deep copy the files and commits from the local context to the project on the server
+                Project projectToPush = new Project(localContext.clonedProject);
+                GlobalContext.projects.put(projectName, projectToPush);
                 serverOutput.println("Push successful!");
-                // after a push is successfully made, log it
                 GlobalContext.projects.get(projectName).activityLog.add(localContext.username + " pushed changes");
             } else {
                 serverOutput.println("Project does not exist on server!");
@@ -157,13 +155,17 @@ public class CommandHandler {
             String projectName = parts[1];
             if (GlobalContext.projects.containsKey(projectName)) {
                 Project serverProject = GlobalContext.projects.get(projectName);
-                Project localProject = localContext.clonedProject; 
-
-                // Iterate over each file in the server project, copying it to the local project
+                if(localContext.clonedProject == null 
+                   || !localContext.clonedProject.name.equals(projectName)){
+                    serverOutput.println("The local project is not the same as the project you are trying to pull!");
+                    return;
+                }
+                Project localProject = localContext.clonedProject;
+                localProject.files.clear(); // clear the local files first
+                // Deep copy each file from the server project to the local project
                 for (Map.Entry<String, File> entry : serverProject.files.entrySet()) {
                     localProject.files.put(entry.getKey(), new File(entry.getValue()));
                 }
-                
                 serverOutput.println("Project pulled successfully!");
                 localContext.clonedProject.activityLog.add(localContext.username + " pulled project");
             } else {
@@ -182,24 +184,36 @@ public class CommandHandler {
     }
     
     public void handleHelp(PrintWriter serverOutput, LocalContext localContext) {
-        serverOutput.println("Available commands:");
-        serverOutput.println("- LOGIN {username} {password} : Log in to the server");
-        serverOutput.println("- CREATE {projectname} : Create a new project on the server");
-        serverOutput.println("- CLONE {projectname} : Clone a project from the server to your local context");
-        serverOutput.println("- COMMIT {message} : Commit to your currently cloned project. The commit message will be added to the list of commits in your local project");
-        serverOutput.println("- PUSH {projectname} : Push your local commit history of the cloned project back to the server");
-        serverOutput.println("- PULL {projectname} : Pull the latest state of the server's project, including any new commits or file changes, to your local clone");
-        serverOutput.println("- LOG : Show the activity log of the cloned project");
-        serverOutput.println("- CREATEFILE {filename} : Create a new file in your cloned project");
-        serverOutput.println("- VIEWFILE {filename} : View the content of a file in your cloned project");
-        serverOutput.println("- WRITEFILE {filename} {content} : Write or append content to a file in your cloned project");
-        serverOutput.println("- DISCONNECT : Disconnect from the server");
-        serverOutput.println("- HELP : List all the available commands and what they do");
+        serverOutput.println("┌───────────────────────────────────────────────────────────────┐");
+        serverOutput.println("│                        COMMANDS MENU                          │");
+        serverOutput.println("├───────────────────────────────────────────────────────────────┤");
+        serverOutput.println("│ 1. LOGIN {user} {pass}            : Log into server           │");
+        serverOutput.println("│ 2. DISCONNECT                     : Log out of server         │");
+        serverOutput.println("│ 3. CREATE {project}               : Make a new project        │");
+        serverOutput.println("│ 4. LIST                           : List all projects         │");
+        serverOutput.println("│ 5. CLONE {project}                : Copy a server project     │");
+        serverOutput.println("│ 6. COMMIT {message}               : Save your changes         │");
+        serverOutput.println("│ 7. LOG                            : Show cloned project log   │");
+        serverOutput.println("│ 8. COMMITLOG                      : Show server project log   │");
+        serverOutput.println("│ 9. PUSH {project}                 : Upload cloned project     │");
+        serverOutput.println("│ 10. PULL {project}                : Download server project   │");
+        serverOutput.println("│ 11. SHUTDOWN {key}                : Turn off the server       │");
+        serverOutput.println("│ 12. CREATEFILE {filename}         : Make a new file           │");
+        serverOutput.println("│ 13. VIEWFILE {filename}           : Read a file               │");
+        serverOutput.println("│ 14. WRITEFILE {filename} {content}: Append to a file          │");
+        serverOutput.println("│ 15. LISTFILES {project}           : List all files in project │");
+        serverOutput.println("│ 16. HELP                          : Show this menu            │");
+        serverOutput.println("└───────────────────────────────────────────────────────────────┘");
     }
+
+
+
     
     public void handleCreateFile(String[] parts, PrintWriter serverOutput, LocalContext localContext) {
         if (parts.length < 2) {
             serverOutput.println("Invalid CREATEFILE command. Usage: CREATEFILE {filename}");
+        } else if (localContext.clonedProject == null) {
+            serverOutput.println("No project cloned!");
         } else {
             File file = new File(parts[1]);
             localContext.clonedProject.files.put(file.getName(), file); // Adding the file to the project
@@ -211,6 +225,8 @@ public class CommandHandler {
     public void handleViewFile(String[] parts, PrintWriter serverOutput, LocalContext localContext) {
         if (parts.length < 2) {
             serverOutput.println("Invalid VIEWFILE command. Usage: VIEWFILE {filename}");
+        } else if (localContext.clonedProject == null) {
+            serverOutput.println("No project cloned!");
         } else {
             File file = localContext.clonedProject.files.get(parts[1]);
             if (file != null) {
@@ -224,6 +240,8 @@ public class CommandHandler {
     public void handleWriteFile(String[] parts, String inputLine, PrintWriter serverOutput, LocalContext localContext) {
         if (parts.length < 3) {
             serverOutput.println("Invalid WRITEFILE command. Usage: WRITEFILE {filename} {content}");
+        } else if (localContext.clonedProject == null) {
+            serverOutput.println("No project cloned!");
         } else {
             File file = localContext.clonedProject.files.get(parts[1]);
             if (file != null) {
@@ -235,5 +253,58 @@ public class CommandHandler {
             }
         }
     }
+    
+    public void handleRemove(String[] parts, PrintWriter serverOutput, LocalContext localContext) {
+        if (parts.length < 3) {
+            serverOutput.println("Invalid REMOVE command. Usage: REMOVE {projectName} {fileName}");
+        } else if (localContext.clonedProject == null) {
+            serverOutput.println("No project cloned!");
+        } else {
+            String projectName = parts[1];
+            String fileName = parts[2];
+            if (GlobalContext.projects.containsKey(projectName)) {
+                Project project = GlobalContext.projects.get(projectName);
+                if (project.files.containsKey(fileName)) {
+                    project.files.remove(fileName);
+                    serverOutput.println("File removed successfully!");
+                } else {
+                    serverOutput.println("File does not exist in this project!");
+                }
+            } else {
+                serverOutput.println("Project does not exist!");
+            }
+        }
+    }
+    
+    public void handleListFiles(String[] parts, PrintWriter serverOutput, LocalContext localContext) {
+        if (parts.length < 2) {
+            serverOutput.println("Invalid LISTFILES command. Usage: LISTFILES {projectName}");
+        } else if (localContext.clonedProject == null) {
+            serverOutput.println("No project cloned!");
+        } else {
+            String projectName = parts[1];
+            if (GlobalContext.projects.containsKey(projectName)) {
+                Project project = GlobalContext.projects.get(projectName);
+                if (!project.files.isEmpty()) {               
+                    serverOutput.println("│   Files in Project " + padRight(projectName, 20) + "  │");
+                    
+                    for (String fileName : project.files.keySet()) {
+                        serverOutput.println("│ " + padRight(fileName, 25) + "│"); // Adjust spacing for alignment
+                    }
+                    serverOutput.println("└───────────────────────────┘");
+                } else {
+                    serverOutput.println("No files in project '" + projectName + "'!");
+                }
+            } else {
+                serverOutput.println("Project '" + projectName + "' does not exist!");
+            }
+        }
+    }
+
+    private String padRight(String s, int n) {
+        return String.format("%-" + n + "s", s);
+    }
+    
+   
 
 }
