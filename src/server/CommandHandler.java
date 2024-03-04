@@ -184,13 +184,17 @@ public class CommandHandler {
     public void handleHelp(PrintWriter serverOutput, LocalContext localContext) {
         serverOutput.println("Available commands:");
         serverOutput.println("- LOGIN {username} {password} : Log in to the server");
-        serverOutput.println("- CREATE {projectname} : Creates a new project on the server");
-        serverOutput.println("- CLONE {projectname} : Clones a project from the server to your local context");
-        serverOutput.println("- COMMIT {message} : Commits to your currently cloned project. The commit message will be added to the list of commits in your local project");
-        serverOutput.println("- PUSH {projectname} : Pushes your local commit history of the cloned project back to the server");
-        serverOutput.println("- LOG : Shows the commit history of the cloned project");
-        serverOutput.println("- DISCONNECT : Disconnects you");
-        serverOutput.println("- HELP : Lists all the commands and what they do");
+        serverOutput.println("- CREATE {projectname} : Create a new project on the server");
+        serverOutput.println("- CLONE {projectname} : Clone a project from the server to your local context");
+        serverOutput.println("- COMMIT {message} : Commit to your currently cloned project. The commit message will be added to the list of commits in your local project");
+        serverOutput.println("- PUSH {projectname} : Push your local commit history of the cloned project back to the server");
+        serverOutput.println("- PULL {projectname} : Pull the latest state of the server's project, including any new commits or file changes, to your local clone");
+        serverOutput.println("- LOG : Show the activity log of the cloned project");
+        serverOutput.println("- CREATEFILE {filename} : Create a new file in your cloned project");
+        serverOutput.println("- VIEWFILE {filename} : View the content of a file in your cloned project");
+        serverOutput.println("- WRITEFILE {filename} {content} : Write or append content to a file in your cloned project");
+        serverOutput.println("- DISCONNECT : Disconnect from the server");
+        serverOutput.println("- HELP : List all the available commands and what they do");
     }
     
     public void handleCreateFile(String[] parts, PrintWriter serverOutput, LocalContext localContext) {
