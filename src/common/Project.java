@@ -12,7 +12,7 @@ public class Project implements Serializable {
     public List<String> activityLog;
     public List<Commit> commits;
     public ConcurrentHashMap<String, File> files; // Keys to retrieve files are now Strings
-
+    
     public Project(String name) {
         this.name = name;
         this.activityLog = new ArrayList<>();

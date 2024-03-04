@@ -49,6 +49,21 @@ public class Server {
         System.out.println("Shutdown command issued, server exiting.");
         System.exit(0);
     }
+    
+    public static void clearServer() {
+        GlobalContext.projects.clear();
+        System.out.println("All projects cleared.");
+        // Delete the serialized data file
+        File file = new File("projects.ser");
+        if (file.exists()) {
+            if (file.delete()) {
+                System.out.println("Serialized data file deleted.");
+            } else {
+                System.out.println("Failed to delete serialized data file.");
+            }
+        }
+    }
+
 
     public static void saveProjects() {
         // Save projects to file

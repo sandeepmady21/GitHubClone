@@ -93,6 +93,10 @@ class ClientHandler implements Runnable {
                     case "REMOVE":
                     	commandHandler.handleRemove(parts, serverOutput, localContext);
                     	break;
+                    	
+                    case "LISTCLONED":
+                    	commandHandler.handleListCloned(serverOutput, localContext);
+                    	break;
 
                     case "HELP":
                         commandHandler.handleHelp(serverOutput, localContext);
@@ -101,6 +105,14 @@ class ClientHandler implements Runnable {
                     case "SHUTDOWN":
                         if (parts.length >= 2) { // Check if a key was provided
                             commandHandler.handleShutdown(parts[1], serverOutput);
+                        } else {
+                            serverOutput.println("Invalid SHUTDOWN command. Usage: SHUTDOWN {secret_key}");
+                        }
+                        break;
+                        
+                    case "CLEARSERVER":
+                        if (parts.length >= 2) { // Check if a key was provided
+                            commandHandler.handleClearServer(parts[1], serverOutput);
                         } else {
                             serverOutput.println("Invalid SHUTDOWN command. Usage: SHUTDOWN {secret_key}");
                         }

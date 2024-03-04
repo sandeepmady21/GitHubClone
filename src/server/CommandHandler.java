@@ -65,13 +65,10 @@ public class CommandHandler {
         if (GlobalContext.projects.isEmpty()) {
             serverOutput.println("No projects have been created yet!");
         } else {
-            serverOutput.println("┌───────────────────────────┐");
-            serverOutput.println("│     Available Projects    │");
-            serverOutput.println("├───────────────────────────┤");
+            serverOutput.println("Available Projects");           
             for (String projectName : GlobalContext.projects.keySet()) {
-                serverOutput.println("│ " + padRight(projectName, 26) + "│"); // Adjust spacing for alignment
-            }
-            serverOutput.println("└───────────────────────────┘");
+                serverOutput.println(projectName); // Adjust spacing for alignment
+            }            
         }
     }
 
@@ -183,6 +180,15 @@ public class CommandHandler {
         }
     }
     
+    public void handleClearServer(String key, PrintWriter serverOutput) {
+        if (SHUTDOWN_KEY.equals(key)) {
+            System.out.println("Shutdown command received with valid key. Shutting down server...");
+            Server.clearServer();
+        } else {
+            serverOutput.println("Invalid key provided for SHUTDOWN command");
+        }
+    }
+    
     public void handleHelp(PrintWriter serverOutput, LocalContext localContext) {
         serverOutput.println("┌───────────────────────────────────────────────────────────────┐");
         serverOutput.println("│                        COMMANDS MENU                          │");
@@ -203,8 +209,12 @@ public class CommandHandler {
         serverOutput.println("│ 14. WRITEFILE {filename} {content}: Append to a file          │");
         serverOutput.println("│ 15. LISTFILES {project}           : List all files in project │");
         serverOutput.println("│ 16. HELP                          : Show this menu            │");
+        serverOutput.println("│ 17. REMOVE {project} {filename}   : Remove a file from project│");
+        serverOutput.println("│ 18. CLONEDLIST                    : List cloned projects      │");
+        serverOutput.println("│ 19. CLEARSERVER {key}             : Clear all projects        │");
         serverOutput.println("└───────────────────────────────────────────────────────────────┘");
     }
+
 
 
 
@@ -266,12 +276,12 @@ public class CommandHandler {
                 Project project = GlobalContext.projects.get(projectName);
                 if (project.files.containsKey(fileName)) {
                     project.files.remove(fileName);
-                    serverOutput.println("File removed successfully!");
+                    serverOutput.println("File '" + fileName + "' removed successfully from project '" + projectName + "'.");
                 } else {
                     serverOutput.println("File does not exist in this project!");
                 }
             } else {
-                serverOutput.println("Project does not exist!");
+            	serverOutput.println("File '" + fileName + "' does not exist in project '" + projectName + "'.");
             }
         }
     }
@@ -286,12 +296,12 @@ public class CommandHandler {
             if (GlobalContext.projects.containsKey(projectName)) {
                 Project project = GlobalContext.projects.get(projectName);
                 if (!project.files.isEmpty()) {               
-                    serverOutput.println("│   Files in Project " + padRight(projectName, 20) + "  │");
+                    serverOutput.println("Files in Project " + projectName);
                     
                     for (String fileName : project.files.keySet()) {
-                        serverOutput.println("│ " + padRight(fileName, 25) + "│"); // Adjust spacing for alignment
+                        serverOutput.println(fileName); // Adjust spacing for alignment
                     }
-                    serverOutput.println("└───────────────────────────┘");
+                    
                 } else {
                     serverOutput.println("No files in project '" + projectName + "'!");
                 }
@@ -300,9 +310,13 @@ public class CommandHandler {
             }
         }
     }
-
-    private String padRight(String s, int n) {
-        return String.format("%-" + n + "s", s);
+    
+    public void handleListCloned(PrintWriter serverOutput, LocalContext localContext) {
+        if (localContext.clonedProject == null) {
+            serverOutput.println("No project cloned!");
+        } else {
+            serverOutput.println("Cloned Project: " + localContext.clonedProject.name);
+        }
     }
     
    
