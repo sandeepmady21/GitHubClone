@@ -210,7 +210,7 @@ public class CommandHandler {
         serverOutput.println("│ 15. LISTFILES {project}           : List all files in project │");
         serverOutput.println("│ 16. HELP                          : Show this menu            │");
         serverOutput.println("│ 17. REMOVE {project} {filename}   : Remove a file from project│");
-        serverOutput.println("│ 18. CLONEDLIST                    : List cloned projects      │");
+        serverOutput.println("│ 18. LISTCLONED                    : Show cloned project       │");
         serverOutput.println("│ 19. CLEARSERVER {key}             : Clear all projects        │");
         serverOutput.println("└───────────────────────────────────────────────────────────────┘");
     }
