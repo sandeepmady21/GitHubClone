@@ -8,6 +8,7 @@ public class AuthenticationService {
     private static final Map<String, String> USERS = new HashMap<>();
 
     static {
+    	USERS.put("user", "pass");
         USERS.put("user1", "pass1");
         USERS.put("user2", "pass2");
         USERS.put("user3", "pass3");

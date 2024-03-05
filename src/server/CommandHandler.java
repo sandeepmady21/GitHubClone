@@ -182,7 +182,7 @@ public class CommandHandler {
     
     public void handleClearServer(String key, PrintWriter serverOutput) {
         if (SHUTDOWN_KEY.equals(key)) {
-            System.out.println("Shutdown command received with valid key. Shutting down server...");
+            System.out.println("Clear command received with valid key. Clearing the server...");
             Server.clearServer();
         } else {
             serverOutput.println("Invalid key provided for SHUTDOWN command");
@@ -214,9 +214,6 @@ public class CommandHandler {
         serverOutput.println("│ 19. CLEARSERVER {key}             : Clear all projects        │");
         serverOutput.println("└───────────────────────────────────────────────────────────────┘");
     }
-
-
-
 
     
     public void handleCreateFile(String[] parts, PrintWriter serverOutput, LocalContext localContext) {
